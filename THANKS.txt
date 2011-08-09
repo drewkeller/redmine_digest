@@ -1,0 +1,4 @@
+Digest THANKS:
+=======================
+
+Emmanuel Bretelle aka chantra (Whining plugin)

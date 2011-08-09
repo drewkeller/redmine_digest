@@ -1,0 +1,20 @@
+en:
+# English strings go here
+  mail_body_digest: "[%{project}] Activity: %{count} events"
+  mail_subject_digest: "[%{project}] Activity: %{count} events"
+  digest_days: "Days to include: "
+  digest_start: "Days ago to start: "
+  start_explanation: "0 = today, 1 = start from yesterday, 7 = start a week ago from today"
+  days: "day(s)"
+  label_activity_view_all: "View all activity"
+  example: "Example"
+  daily: "daily"
+  weekly: "weekly"
+  example_text: "To create a %{period} digest, set the scheduler to run after midnight. Set 'days to include' to %{days} and set 'days ago to start' to %{start}."
+  label_send_test_email: "Send a test email to your email address"
+  label_send_all_digests: "Send digests for all digest-enabled projects"
+  label_apply_changes_first: "You must apply changes before sending email."
+
+  notice_digest_sent_to: "A digest was processed for %{value}."
+  notice_digests_sent: Digest emails were processed.
+  notice_digest_error: "An error occurred while sending the digest (%{value})"

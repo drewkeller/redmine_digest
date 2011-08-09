@@ -1,0 +1,76 @@
+= Digest
+
+This plugin sends email digests of project activity.
+
+==Author
+
+* Drew Keller <drew_-_AT_-_drewkeller_-_DOT_-_com>
+
+==Changelog
+
+For the complete changelog see the <tt>CHANGELOG</tt> file in the Redmine Digest plugin directory.
+
+==Latest stable release
+
+The currently available, latest stable release of the plugin is version <b>0.0.1</b>.
+
+==Purpose
+
+This plugin includes a rake job which builds a digest or summary of each project and emails it to all of the
+ project's members.
+
+==Compatibility
+
+This plugin is compatible with Redmine 1.2.x as well as with the current Redmine trunk.
+
+==Obtaining 
+
+<i>URL of the GitHub repository: http://github.com/drewkeller/redmine_digest</i>
+
+The source of this plugin can be "cloned" from the GitHub-repo using:
+
+<tt>$ cd {RAILS_ROOT}/vendor/plugins && git clone git://github.com/drewkeller/redmine_digest.git</tt>
+
+==Installation
+
+- Download the plugin from the available source http://github.com/drewkeller/redmine_digest.git
+- Install the plugin as described at: http://www.redmine.org/wiki/redmine/Plugins (<b>this plugin DO NOT require a plugin database migration</b>)
+
+==Usage
+
+Create a cron job with a line similar to this:
+    0 7 * * 1,2,3,4,5 www-data cd /path/to/redmine && /usr/bin/rake redmine:send_digest RAILS_ENV="production"
+
+Or create a Windows task with a line similar to this:
+    cmd /C rake redmine:send_digest RAILS_ENV="production"
+
+
+==Upgrading
+
+- Backup the currently deployed Digest plugin (<tt>cp -r /vendor/plugins/redmine_digest /path/to/some/folders/redmine_digest-backup</tt>)
+- Update the plugin using <tt>git pull</tt>
+
+==Uninstalling
+
+- Remove the directory <i>"redmine_digest"</i> from the plugin-directory <i>"../vendor/plugins"</i>
+- Remove the cronjob entry or Windows task
+
+==Licensing
+
+This plugin is open-source and licensed under the "GNU General Public License v2" (GPL, http://www.gnu.org/licenses/old-licenses/gpl-2.0.html). See the included <tt>GPL.txt</tt> and <tt>LICENSE.txt</tt> files for details.
+
+* (C) 2011 Drew Keller
+
+==Support
+
+If you would like to report a bug or request a new feature you can:
+- check if issue is listed here: http://github.com/drewkeller/redmine_digest/issues
+- open a new issue at http://github.com/drewkeller/redmine_digest/issues/new if you did not find a match
+
+You can also post your feedback about the plugin in the dedicated plugin-section of the Redmine forums (http://www.redmine.org/projects/redmine/boards/3)
+
+As an alternative you can also join the <tt>#redmine</tt> channel on the "freenode IRC network" (http://freenode.net/irc_servers.shtml) to see if there is anyone who can provide some support.
+
+== Thanks
+
+Please see THANKS.txt

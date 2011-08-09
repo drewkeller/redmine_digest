@@ -1,0 +1,29 @@
+<p>
+	<%= content_tag(:label, l(:digest_start)) %>
+	<%= text_field_tag("settings[start_default]", Setting.plugin_digest[:start_default]) %>
+	<%= l(:days) %><br />
+	<em><%= l(:start_explanation) %></em>
+</p>
+<p>
+	<%= content_tag(:label, l(:digest_days)) %>
+	<%= text_field_tag("settings[days_default]", Setting.plugin_digest[:days_default]) %>
+	<%= l(:days) %>
+</p>
+<p>
+	<%= content_tag(:label, l(:example) + " 1:") %>
+	<%= l(:example_text, :period => l(:daily), :days => 1, :start => 1) %>
+</p>
+<p>
+	<%= content_tag(:label, l(:example) + " 2:") %>
+	<%= l(:example_text, :period => l(:weekly), :days => 7, :start => 8) %>
+</p>
+<p>&nbsp;</p>
+<p>
+	<%= link_to l(:label_send_test_email), :controller => 'digest', :action => 'test_email' %>
+</p>
+<p>
+	<%= link_to l(:label_send_all_digests), :controller => 'digest', :action => 'send_all' %>
+</p>
+<p>
+	<em><%= l(:label_apply_changes_first) %></em>
+</p>
