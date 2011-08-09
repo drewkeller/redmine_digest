@@ -17,7 +17,6 @@ class DigestMailer < Mailer
 		#set_language_if_valid user.language
 		recipients recip_emails
 		#recipients Setting.mail_from
-		#cc(['email@somewhere.com'])
 		if l(:this_is_gloc_lib) == 'this_is_gloc_lib'
 			subject l(:mail_subject_digest, issues.size, days)
 		else
@@ -72,7 +71,7 @@ class DigestMailer < Mailer
 		body[:params] = params
 
 	rescue ActiveRecord::RecordNotFound
-		puts "Record not found!"
+		logger.error "Record not found!"
 		#render_404
 	end
   
@@ -82,26 +81,22 @@ class DigestMailer < Mailer
 		if project.nil?
 			p = EnabledModule.find(:all, :conditions => ["name = 'digest'"]).collect { |mod| mod.project_id }
 			if p.length == 0
-				puts "No projects were found in the environment or no projects have digest enabled."
+				log "No projects were found in the environment or no projects have digest enabled."
 				return
 			end
-			puts "There are %d projects that have the Digest module enabled:" % p.length
 			condition = "id IN (" + p.join(",") + ")" 
-			puts "   %s" % condition
-			
-			
 			projects = Project.find(:all, :conditions => [condition])
 			if projects.empty?
-				puts "Could not find matching project."
+				log "Could not find matching project."
 			else
-				puts "Found %d projects to check." % projects.length
+				#puts "Found %d projects to check." % projects.length
 			end
 		else
-			log "** Checking project '%s'" % project
+			#log "** Checking project '%s'" % project
 			projects = Project.find(:all, 
 				:conditions => ["id='%s' or identifier='%s'" % [project, project]])
 			if projects.length == 0
-				puts "The specified project '%s' was not found." % [project]
+				log "The specified project '%s' was not found." % [project]
 			end
 		end
 		return projects
@@ -110,7 +105,8 @@ class DigestMailer < Mailer
 	def self.get_recipients(project)
 		recipients = []
 		members = Member.find(:all, :conditions => ["project_id = " + project[:id].to_s]).each { |m|
-			recipients << User.find(m.user_id).mail
+			user = User.find(m.user_id)
+			recipients << user.mail unless not user.active?
 		}
 		print "Recipients: "
 		recipients.each { |r| print r + " " }
@@ -130,7 +126,7 @@ class DigestMailer < Mailer
 		results = []
 		projects = get_projects(options[:project])
 		projects.each do |project|
-			log "Processing project '%s'..." % project.name
+			log "** Processing project '%s'..." % project.name
 			
 			body = {
 				:project => project,
@@ -142,7 +138,7 @@ class DigestMailer < Mailer
 			fill_events(project, body)
 			if body[:events].empty?
 			  message = "No events were found for project %s." % project.to_s
-			  puts message
+			  log message
 			  results << message
 			  next
 			end
@@ -150,7 +146,7 @@ class DigestMailer < Mailer
 			recipients = options[:test_email].nil? ? get_recipients(project) : options[:test_email]
 			if recipients.empty?
 				message = "No members were found for project %s." % project.to_s
-				puts message
+				log message
 				results << message
 				next
 			end
@@ -165,7 +161,7 @@ class DigestMailer < Mailer
 	
 	def self.logger
 		if RAILS_DEFAULT_LOGGER == nil
-			#raise "No logger found"
+			puts "No logger found"
 		else
 			return RAILS_DEFAULT_LOGGER
 		end

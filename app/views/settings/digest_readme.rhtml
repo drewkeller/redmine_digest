@@ -1,0 +1,22 @@
+<div id="settings">
+
+<h2><%= l(:label_settings) + ": Digest plugin" %></h2>
+
+<div class="box">
+
+<div class="tabs">
+<ul>
+<li><%= link_to "Settings", :controller => 'settings', :action => 'plugin', :id => 'digest' %></li>
+<li><%= link_to "Readme", {:controller => 'digest', :action => 'show_readme'}, :class => 'selected' %></li>
+</ul>
+</div>
+
+<div class="wiki">
+<%= @readme[:content] %>
+</div>
+
+</div>
+
+</div>
+
+<% html_title("Digest " + @readme[:filename]) -%>

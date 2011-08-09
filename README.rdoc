@@ -8,16 +8,11 @@ This plugin sends email digests of project activity.
 
 ==Changelog
 
-For the complete changelog see the <tt>CHANGELOG</tt> file in the Redmine Digest plugin directory.
-
-==Latest stable release
-
-The currently available, latest stable release of the plugin is version <b>0.0.1</b>.
+For the complete changelog see the <tt>CHANGELOG</tt> file in the plugin's directory.
 
 ==Purpose
 
-This plugin includes a rake job which builds a digest or summary of each project and emails it to all of the
- project's members.
+This plugin includes a rake job which builds a digest or summary of each project and emails it to all of the project's members.
 
 ==Compatibility
 
@@ -25,34 +20,101 @@ This plugin is compatible with Redmine 1.2.x as well as with the current Redmine
 
 ==Obtaining 
 
-<i>URL of the GitHub repository: http://github.com/drewkeller/redmine_digest</i>
+GitHub repository: http://github.com/drewkeller/redmine_digest
 
-The source of this plugin can be "cloned" from the GitHub-repo using:
+The source of this plugin can be cloned from GitHub using:
 
-<tt>$ cd {RAILS_ROOT}/vendor/plugins && git clone git://github.com/drewkeller/redmine_digest.git</tt>
+    $ cd {RAILS_ROOT}/vendor/plugins && git clone git://github.com/drewkeller/redmine_digest.git
 
 ==Installation
 
 - Download the plugin from the available source http://github.com/drewkeller/redmine_digest.git
-- Install the plugin as described at: http://www.redmine.org/wiki/redmine/Plugins (<b>this plugin DO NOT require a plugin database migration</b>)
+- Install the plugin as described at: http://www.redmine.org/wiki/redmine/Plugins (<b>this plugin DOES NOT require a plugin database migration</b>)
 
 ==Usage
 
+Use a scheduler to call the task. The following options can be set on the command line.
+All of these options are optional. If an option is included on the command line, it overrides the setting on the 
+plugins settings page.
+
+    start   : number of days ago to start.
+              0 = today, 1 = start from yesterday, 7 = start a week ago from today
+
+    days    : number of days to include in the digest
+
+    project : name or id of a specific Redmine project to create a digest for
+
 Create a cron job with a line similar to this:
-    0 7 * * 1,2,3,4,5 www-data cd /path/to/redmine && /usr/bin/rake redmine:send_digest RAILS_ENV="production"
+    1 0 * * 1-7 www-data cd /path/to/redmine && /usr/bin/rake redmine:send_digest start=1 days=1 project=myproject RAILS_ENV="production"
 
 Or create a Windows task with a line similar to this:
-    cmd /C rake redmine:send_digest RAILS_ENV="production"
+    cmd /C rake redmine:send_digest start=1 days=1 project=myproject RAILS_ENV="production"
 
+Or install rufus-scheduler and add an initializer to REDMINE_ROOT/config/initializers/digest_tasks.rb, like...
+    scheduler.cron '01 00 * * 1-7' do
+	  # every day at 00:01 (12:01am)
+	  options = { :start => 1, :days => 1, :project => 'myproject' }
+	  DigestController.new.send_digest(options)
+    end
+
+==Examples
+
+===Example 1: Daily Digest for single project
+
+* Creates a daily digest for a single Redmine project. Since "start" and "days" are set on the command line, they can be different from the settings on the plugin settings page.
+
+* The command lines in the usage section are examples of this strategy.
+
+===Example 2: Daily Digest
+
+* Creates a daily digest for each Redmine project
+
+Set the scheduler to run after midnight. On the plugins settings page, set 'days to include' to 1 and set 'days ago to start' to 1. Some example scheduler commands are below.
+
+* Cron job: 
+     1 0 * * 1-7 www-data cd /path/to/redmine && /usr/bin/rake redmine:send_digest RAILS_ENV="production"
+
+* Windows task set to run at 12:01am daily:
+     cmd /C rake redmine:send_digest RAILS_ENV="production" 
+
+* rufus-scheduler (REDMINE_ROOT/config/initializers/digest_tasks.rb)
+    scheduler.cron '01 00 * * 1-7' do
+	  # every day at 00:01 (12:01am)
+	  options = { }
+	  DigestController.new.send_digest(options)
+    end
+    
+===Example 3: Weekly Digest
+
+* Creates a weekly digest for each Redmine project
+
+Set the scheduler to run after midnight. On the plugins settings page, set 'days to include' to 7 and set 'days ago to start' to 8. Some example scheduler commands are below.
+
+* Cron job: 
+     1 0 * * 2 www-data cd /path/to/redmine && /usr/bin/rake redmine:send_digest RAILS_ENV="production"
+
+* Windows task set to run at 12:01am weekly:
+     cmd /C rake redmine:send_digest RAILS_ENV="production" 
+
+* rufus-scheduler (REDMINE_ROOT/config/initializers/digest_tasks.rb)
+    scheduler.cron '01 00 * * 2' do
+	  # on Monday at 00:01 (12:01am)
+	  options = { }
+	  DigestController.new.send_digest(options)
+    end
 
 ==Upgrading
 
-- Backup the currently deployed Digest plugin (<tt>cp -r /vendor/plugins/redmine_digest /path/to/some/folders/redmine_digest-backup</tt>)
+- Copy the currently deployed Digest plugin folder to a backup folder
 - Update the plugin using <tt>git pull</tt>
+
+Or
+- Copy the currently deployed Digest plugin folder to a backup folder
+- Replace the plugin folder and it's contents with the new one
 
 ==Uninstalling
 
-- Remove the directory <i>"redmine_digest"</i> from the plugin-directory <i>"../vendor/plugins"</i>
+- Remove the plugin folder from the plugin-directory <i>"REDMINE_ROOT/vendor/plugins/digest"</i>
 - Remove the cronjob entry or Windows task
 
 ==Licensing

@@ -14,9 +14,30 @@
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+require 'rdoc/markup/simple_markup'
+require 'rdoc/markup/simple_markup/to_html'
 
 class DigestController < ApplicationController
 	unloadable
+	
+	layout 'admin'
+
+	def show_readme
+		filename = 'README.rdoc'
+		p = SM::SimpleMarkup.new
+		h = SM::ToHtml.new
+		f = File.dirname(__FILE__) + '/../../' + filename
+		input_string = File.open(f, 'rb').read
+		instructions = p.convert(input_string, h)
+		@readme = { 
+			:filename => filename, 
+			:content => instructions 
+		}
+		respond_to do |format|
+			format.html { render :template => 'settings/digest_readme.rhtml', :layout => 'admin',
+			:locals => { :readme => @readme }}
+		end
+	end
 
 	def digest_send(which, options={})
 		raise_delivery_errors = ActionMailer::Base.raise_delivery_errors
@@ -39,9 +60,9 @@ class DigestController < ApplicationController
 			if @test.nil? or @test.empty?
 				message += "<p>%s</p>" % "There was no resulting email."
 			else
-				message += "<p>%d %s sent.<br />%s</p>" % [
+				message += "<p>%d %s processed.<br />%s</p>" % [
 					@test.length, 
-					@test.length == 1 ? "email was" : "emails were",
+					@test.length == 1 ? "project was" : "projects were",
 					@test.join("<br />")
 				]
 			end

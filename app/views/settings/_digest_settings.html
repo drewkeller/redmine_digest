@@ -1,3 +1,11 @@
+
+<div class="tabs">
+<ul>
+<li><%= link_to "Settings", {:controller => 'settings', :action => 'plugin', :id => 'digest'}, :class => 'selected' %></li>
+<li><%= link_to "Readme", :controller => 'digest', :action => 'show_readme' %></li>
+</ul>
+</div>
+
 <p>
 	<%= content_tag(:label, l(:digest_start)) %>
 	<%= text_field_tag("settings[start_default]", Setting.plugin_digest[:start_default]) %>
@@ -10,12 +18,12 @@
 	<%= l(:days) %>
 </p>
 <p>
-	<%= content_tag(:label, l(:example) + " 1:") %>
-	<%= l(:example_text, :period => l(:daily), :days => 1, :start => 1) %>
+	<%= content_tag(:label, l(:label_note)) %>
+	<%= l(:label_note_text) %>
 </p>
 <p>
-	<%= content_tag(:label, l(:example) + " 2:") %>
-	<%= l(:example_text, :period => l(:weekly), :days => 7, :start => 8) %>
+	<%= content_tag(:label, l(:label_example)) %>
+	<%= l(:label_example_text) %>
 </p>
 <p>&nbsp;</p>
 <p>
@@ -27,3 +35,6 @@
 <p>
 	<em><%= l(:label_apply_changes_first) %></em>
 </p>
+<%#= textilizable(File.open(File.dirname(__FILE__) + '/../../../README.rdoc', 'rb').read) %>
+
+
