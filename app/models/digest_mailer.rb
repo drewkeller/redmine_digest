@@ -105,12 +105,11 @@ class DigestMailer < Mailer
 	def self.get_recipients(project)
 		recipients = []
 		members = Member.find(:all, :conditions => ["project_id = " + project[:id].to_s]).each { |m|
-			user = User.find(m.user_id)
-			recipients << user.mail unless not user.active?
+			user = m.user
+			if user && user.active? && user.mail
+				recipients << user.mail
+			end
 		}
-		print "Recipients: "
-		recipients.each { |r| print r + " " }
-		puts
 		return recipients
 	end
   
