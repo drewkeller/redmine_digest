@@ -2,6 +2,8 @@ require "mailer"
 #require "actionmailer"
 
 class DigestMailer < Mailer
+	unloadable
+	 
 	#public :self.test
 	def self.test(user)
 		options = {}
@@ -88,8 +90,6 @@ class DigestMailer < Mailer
 			projects = Project.find(:all, :conditions => [condition])
 			if projects.empty?
 				log "Could not find matching project."
-			else
-				#puts "Found %d projects to check." % projects.length
 			end
 		else
 			#log "** Checking project '%s'" % project
@@ -104,10 +104,17 @@ class DigestMailer < Mailer
   
 	def self.get_recipients(project)
 		recipients = []
+		default = Setting.plugin_digest[:default_account_enabled]
+		default = default.nil? ? true : default
 		members = Member.find(:all, :conditions => ["project_id = " + project[:id].to_s]).each { |m|
 			user = m.user
 			if user && user.active? && user.mail
-				recipients << user.mail
+				if user.digest_account.nil?
+					active = default
+				else
+					active = user.digest_account.active?
+				end
+				recipients << user.mail if active
 			end
 		}
 		return recipients

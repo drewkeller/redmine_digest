@@ -1,5 +1,7 @@
 = Digest
 
+==NOTE to upgraders from 0.0.1: You MUST perform db:migrate_plugins after upgrading!!!
+
 This plugin sends email digests of project activity.
 
 ==Author
@@ -29,7 +31,7 @@ The source of this plugin can be cloned from GitHub using:
 ==Installation
 
 - Download the plugin from the available source http://github.com/drewkeller/redmine_digest.git
-- Install the plugin as described at: http://www.redmine.org/wiki/redmine/Plugins (<b>this plugin DOES NOT require a plugin database migration</b>)
+- Install the plugin as described at: http://www.redmine.org/wiki/redmine/Plugins (<b>this plugin DOES require a plugin database migration</b>)
 
 ==Usage
 

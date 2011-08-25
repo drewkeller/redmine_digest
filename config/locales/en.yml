@@ -1,5 +1,10 @@
 en:
 # English strings go here
+  label_digest_account_settings: Digests
+  label_digest_account_description: Receive an email periodically that shows project activity.
+  label_digest_default_account_enabled: Default setting for users
+  label_active: Active
+  
   mail_body_digest: "[%{project}] Activity: %{count} events"
   mail_subject_digest: "[%{project}] Activity: %{count} events"
   

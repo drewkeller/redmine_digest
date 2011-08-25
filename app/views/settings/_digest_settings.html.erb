@@ -5,6 +5,11 @@
 <li><%= link_to "Readme", :controller => 'digest', :action => 'show_readme' %></li>
 </ul>
 </div>
+<p>
+	<%= content_tag(:label, l(:label_digest_default_account_enabled)) %>
+	<%= check_box_tag("settings[default_account_enabled]", "1", Setting.plugin_digest[:default_account_enabled]) %> 
+	<%= l(:label_active) %><br />
+</p>
 
 <p>
 	<%= content_tag(:label, l(:digest_start)) %>
