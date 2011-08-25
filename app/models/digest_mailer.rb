@@ -157,8 +157,18 @@ class DigestMailer < Mailer
 				next
 			end
 			email = deliver_digest(project, recipients, body, start)
-			period = body[:date_from] == body[:date_to]-1 ? format_date(body[:date_from]) : l(:label_date_from_to, :start => format_date(body[:date_from]), :end => format_date(body[:date_to]-1)).downcase
-			message = "Sent digest: %s (%s)" % [email.subject, period]
+			if email.nil?
+				message = "Email delivery failed for project '%s'" % project.name
+			elsif not email.respond_to?('subject')
+				if email.is_a? String
+					message = email 
+				else
+					message = "The email does not have a subject, so it is assumed something went wrong."
+				end
+			else
+				period = body[:date_from] == body[:date_to]-1 ? format_date(body[:date_from]) : l(:label_date_from_to, :start => format_date(body[:date_from]), :end => format_date(body[:date_to]-1)).downcase
+				message = "Sent digest: %s (%s)" % [email.subject, period]
+			end
 			log message
 			results << message
 		end
