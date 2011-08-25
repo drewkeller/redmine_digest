@@ -1,3 +1,11 @@
+version 0.1.0 2011-08-25
+ + Add setting and interface for users to enable/disable whether they receive 
+   the digest
+ + Add setting for administrator to control the user default for digests 
+   enabled/disabled (default is enabled)
+ * Update documentation
+ % Note: Now requires to do db:migrate after installing the plugin (or when 
+   upgrading from an earlier version)
 
 version 0.0.1 2011-08-03
   * First release
