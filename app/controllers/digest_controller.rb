@@ -76,7 +76,7 @@ class DigestController < ApplicationController
 		end
 		ActionMailer::Base.raise_delivery_errors = raise_delivery_errors
 		if not session.nil?
-			redirect_to :controller => 'settings', :action => 'plugin', :id => 'digest'
+			redirect_to :controller => 'settings', :action => 'plugin', :id => 'redmine_digest'
 		end
 	end
 	

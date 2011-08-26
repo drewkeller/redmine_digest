@@ -6,7 +6,7 @@
   <%
 	if @user.digest_account.nil?
 	  account = @user.build_digest_account
-	  account[:active] = Setting.plugin_digest[:default_account_enabled]
+	  account[:active] = Setting.plugin_redmine_digest[:default_account_enabled]
 	end
   -%>
   <% @user.build_digest_account unless @user.digest_account -%>

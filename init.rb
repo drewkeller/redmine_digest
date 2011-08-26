@@ -18,7 +18,7 @@ Dispatcher.to_prepare :redmine_digest do
   end
 end
 
-Redmine::Plugin.register :digest do
+Redmine::Plugin.register :redmine_digest do
   name 'Digest plugin'
   author 'Drew Keller'
   #author_url
@@ -32,7 +32,7 @@ Redmine::Plugin.register :digest do
 	:default_account_enabled => "true"}, 
 	:partial => 'settings/digest_settings'
 
-  project_module :digest do
+  project_module :redmine_digest do
     # we need a dummy permission to enable per-project module enablement
     permission :dummy, {:dummy => [:dummy]}, :public => true
   end

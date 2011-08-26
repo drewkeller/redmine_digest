@@ -103,7 +103,7 @@ class DigestMailer < Mailer
   
 	def self.get_recipients(project)
 		recipients = []
-		default = Setting.plugin_digest[:default_account_enabled]
+		default = Setting.plugin_redmine_digest[:default_account_enabled]
 		default = default.nil? ? true : default
 		members = Member.find(:all, :conditions => ["project_id = " + project[:id].to_s]).each { |m|
 			user = m.user
@@ -120,8 +120,8 @@ class DigestMailer < Mailer
 	end
   
 	def self.digests(options={})
-		start_default = Setting.plugin_digest[:start_default].to_i
-		days_default = Setting.plugin_digest[:days_default].to_i
+		start_default = Setting.plugin_redmine_digest[:start_default].to_i
+		days_default = Setting.plugin_redmine_digest[:days_default].to_i
 		days = options[:days].nil? ? days_default : options[:days].to_i
 		start = options[:start].nil? ? start_default : options[:start].to_i
 		puts
