@@ -7,8 +7,8 @@ class DigestMailer < Mailer
 	#public :self.test
 	def self.test(user)
 		options = {}
-		project = Project.find :first
-		options[:project] = project[:name]
+		#project = Project.find :first
+		#options[:project] = project[:name]
 		options[:test_email] = user.mail
 		log "Sending test email to %s." % user.mail
 
@@ -56,14 +56,13 @@ class DigestMailer < Mailer
 		params["show_documents"] = 1
 		params["show_files"] = 1
 		params["show_wiki_edits"] = 1
-		author = (params[:user_id].blank? ? nil : User.active.find(params[:user_id]))
-
-		activity = Redmine::Activity::Fetcher.new(User.current, :project => project,
-																 :with_subprojects => with_subprojects,
-																 :author => author)
+		user = User.find(:all, :conditions => ["admin=1"]).first
+		puts "Warning: Could not find an admin user. Some events might not be visible to the anonymous user" if user.nil?
+		activity = Redmine::Activity::Fetcher.new(user, :project => project,
+			:with_subprojects => with_subprojects)
 		activity.scope_select {|t| !params["show_#{t}"].nil?}
 		#@activity.scope_select {:all}
-		activity.scope = (author.nil? ? :default : :all) if activity.scope.empty?
+		activity.scope = (user.nil? ? :default : :all) if activity.scope.empty?
 
 		events = activity.events(date_from, date_to)
 
