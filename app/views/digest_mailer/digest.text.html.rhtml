@@ -45,12 +45,7 @@ today    : <%= Time.now.to_date %>
 <ul>
 <% @events_by_day.keys.sort.each do |day| %>
 <li>
-<% formatted_day = format_activity_day(day); formatted_date = format_date(day) %>
-<% if formatted_day == formatted_date -%>
-  <h3><%= formatted_date %></h3>
-<% else %> 
-  <h3><%= formatted_day %> <span style="font-weight:normal;">(<%= formatted_date %>)</span></h3>
-<% end -%>
+<h3><%= format_date(day) %></h3>
 <dl>
 <% @events_by_day[day].sort {|x,y| x.event_datetime <=> y.event_datetime }.each do |e| -%>
 <div class="event">
