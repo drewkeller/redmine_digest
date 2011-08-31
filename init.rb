@@ -14,7 +14,6 @@ Dispatcher.to_prepare :redmine_digest do
   # Guards against including the module multiple times (like in tests)
   # and registering multiple callbacks
   unless User.included_modules.include? RedmineDigest::UserPatch
-    puts "Applying UserPatch"
     User.send(:include, RedmineDigest::UserPatch)
   end
 end
@@ -38,5 +37,4 @@ Redmine::Plugin.register :redmine_digest do
     permission :dummy, {:dummy => [:dummy]}, :public => true
   end
 
-  puts "Registered redmine_digest plugin, version %s" % version
 end

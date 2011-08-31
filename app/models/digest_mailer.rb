@@ -58,13 +58,11 @@ class DigestMailer < Mailer
 		params["show_wiki_edits"] = 1
 		user = User.find(:all, :conditions => ["admin=1"]).first
 		puts "Warning: Could not find an admin user. Some events might not be visible to the anonymous user" if user.nil?
-		puts "Fetching activity"
 		activity = Redmine::Activity::Fetcher.new(user, :project => project,
 			:with_subprojects => with_subprojects)
 		activity.scope_select {|t| !params["show_#{t}"].nil?}
 		#@activity.scope_select {:all}
 		activity.scope = (user.nil? ? :default : :all) if activity.scope.empty?
-		puts "Activity.scope: %s" % activity.scope.inspect
 
 		events = activity.events(date_from, date_to)
 
@@ -82,7 +80,6 @@ class DigestMailer < Mailer
 	def self.get_projects(project)
 		projects = []
 		if project.nil?
-			puts "Looking up projects to process..."
 			p = EnabledModule.find(:all, :conditions => ["name = 'redmine_digest'"]).collect { |mod| mod.project_id }
 			if p.length == 0
 				log "No projects were found in the environment or no projects have digest enabled."
@@ -93,16 +90,13 @@ class DigestMailer < Mailer
 			if projects.empty?
 				log "Could not find matching project."
 			end
-			puts "Found %i digestable projects out of %i total projects." % [projects.length, p.length]
 		else
-			puts "Checking project '%s'" % project
 			projects = Project.find(:all, 
 				:conditions => ["id='%s' or identifier='%s'" % [project, project]])
 			if projects.length == 0
 				log "The specified project '%s' was not found." % [project]
 			end
 		end
-		puts "Projects to process: %s" % projects.join(", ")
 		return projects
 	end
   
@@ -110,8 +104,6 @@ class DigestMailer < Mailer
 		recipients = []
 		default = Setting.plugin_redmine_digest[:default_account_enabled]
 		default = default.nil? ? true : default
-		puts "Default setting for whether digest is active for users: %s" % default.to_s
-		puts "Checking for users of project[:id] '%s'..." % project[:id].to_s
 		members = Member.find(:all, :conditions => ["project_id = " + project[:id].to_s]).each { |m|
 			user = m.user
 			if user && user.active? && user.mail

@@ -14,8 +14,6 @@ module RedmineDigest
         accepts_nested_attributes_for :digest_account
         safe_attributes 'digest_account'
         safe_attributes 'digest_account_attributes'
-        
-        puts "Added relation to User for digest_account"
       end
 
     end
