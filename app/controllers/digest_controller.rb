@@ -49,6 +49,8 @@ class DigestController < ApplicationController
 				@test = DigestMailer.digests(options)
 				message = l(:notice_digests_sent)
 			when "test"
+				puts "User.current: %s" % User.current
+				puts "User.current.mail: %s" % User.current.mail
 				@test = DigestMailer.test(User.current)
 				message = l(:notice_digest_sent_to, User.current.mail)
 			when "all"
@@ -75,20 +77,28 @@ class DigestController < ApplicationController
 			flash[:error] = l(:notice_digest_error, e.message) unless session.nil?
 		end
 		ActionMailer::Base.raise_delivery_errors = raise_delivery_errors
+		puts "Checking session state..."
 		if not session.nil?
+			puts "Redirecting to plugin settings."
 			redirect_to :controller => 'settings', :action => 'plugin', :id => 'redmine_digest'
+		else
+			puts "A session was not found."
 		end
 	end
 	
 	def send_digest(options={})
+		puts "Preparing to send digest..."
+		puts options.inspect
 		digest_send("options", options)
 	end
 	
 	def send_all
+		puts "Preparing to send digest for all projects."
 		digest_send "all"
 	end
 
 	def test_email
+		puts "Preparing to send test digest."
 		digest_send "test"
 	end
 
