@@ -80,7 +80,7 @@ class DigestMailer < Mailer
 	def self.get_projects(project)
 		projects = []
 		if project.nil?
-			p = EnabledModule.find(:all, :conditions => ["name = 'digest'"]).collect { |mod| mod.project_id }
+			p = EnabledModule.find(:all, :conditions => ["name = 'redmine_digest'"]).collect { |mod| mod.project_id }
 			if p.length == 0
 				log "No projects were found in the environment or no projects have digest enabled."
 				return
@@ -129,6 +129,7 @@ class DigestMailer < Mailer
 		log "Start: %d" % start
 		log "Days : %d" % days
 		results = []
+		return results if projects.nil?
 		projects = get_projects(options[:project])
 		projects.each do |project|
 			log "** Processing project '%s'..." % project.name
