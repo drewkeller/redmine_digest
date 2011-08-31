@@ -110,7 +110,8 @@ class DigestMailer < Mailer
 		recipients = []
 		default = Setting.plugin_redmine_digest[:default_account_enabled]
 		default = default.nil? ? true : default
-		puts "Default setting for whether digest is active for users: " % default.to_s
+		puts "Default setting for whether digest is active for users: %s" % default.to_s
+		puts "Checking for users of project[:id] '%s'..." % project[:id].to_s
 		members = Member.find(:all, :conditions => ["project_id = " + project[:id].to_s]).each { |m|
 			user = m.user
 			if user && user.active? && user.mail
@@ -138,6 +139,7 @@ class DigestMailer < Mailer
 		results = []
 		return results if projects.nil?
 		projects = get_projects(options[:project])
+		return results if projects.nil?
 		projects.each do |project|
 			log "** Processing project '%s'..." % project.name
 			
