@@ -129,7 +129,6 @@ class DigestMailer < Mailer
 		log "Start: %d" % start
 		log "Days : %d" % days
 		results = []
-		return results if projects.nil?
 		projects = get_projects(options[:project])
 		return results if projects.nil?
 		projects.each do |project|
