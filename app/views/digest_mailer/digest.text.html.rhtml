@@ -17,15 +17,6 @@
 .event .description 
 </style>
 
-<!-- p>
-<%#= 
-if l(:this_is_gloc_lib) == 'this_is_gloc_lib'
-	l(:mail_body_digest, @project, @events_by_day.size)
-else
-	l(:mail_body_digest, :project => @project, :count => @events_by_day.size) 
-end
-%></p -->
-
 <% if not @test_email.nil? -%>
 <h3>Test email</h3>
 <pre>
@@ -44,13 +35,14 @@ today    : <%= Time.now.to_date %>
 <div id="activity">
 <ul>
 <% @events_by_day.keys.sort.each do |day| %>
+<% if day.nil? %><p>An event with no day was detected and is being skipped.</p><% next %><% end %>
 <li>
 <h3><%= format_date(day) %></h3>
 <dl>
 <% @events_by_day[day].sort {|x,y| x.event_datetime <=> y.event_datetime }.each do |e| -%>
 <div class="event">
   <dt class="<%= e.event_type %>  <%= User.current.logged? && e.respond_to?(:event_author) && User.current == e.event_author ? 'me' : nil %>">
-	<%= avatar(e.event_author, :size => "24") if e.respond_to?(:event_author) %>
+	<%#= avatar(e.event_author, :size => "24") if e.respond_to?(:event_author) %>
   <span class="time"><%= format_time(e.event_datetime, false) %></span>
   <%#= content_tag('span', h(e.project), :class => 'project') if @project.nil? || @project != e.project %>
   <%= link_to format_activity_title(e.event_title), e.event_url({:only_path => false}) %>
