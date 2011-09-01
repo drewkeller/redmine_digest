@@ -1,9 +1,15 @@
 
 Activity
 
+<% if @events_by_day.blank? -%>
+<p><%= l(:label_no_data) %></p>
+<% else -%>
 <% @events_by_day.keys.sort.each do |day| -%>
-<% if day.nil? %>An event with no day was detected and is being skipped.<% next %><% end %>
+<% if day.nil? %>
+* Unkown date =================
+<% else -%>
 * <%= format_date(day) %>(<%= @date_to-@days == @date_to-1? format_date(@date_to) : l(:label_date_from_to, :start => format_date(@date_to - @days), :end => format_date(@date_to-1)).downcase %>) =================
+<% end -%>
 <% @events_by_day[day].sort {|x,y| x.event_datetime <=> y.event_datetime }.each do |e| -%>
   * <%= format_time(e.event_datetime, false) %> <%= link_to format_activity_title(e.event_title), e.event_url({:only_path => false}) %>
     <%= e.event_author if e.respond_to?(:event_author) %>
@@ -16,3 +22,4 @@ Activity
 	:controller => 'activities', 
 	:action => 'index', 
 	:only_path => false}) %>
+<% end -%>
