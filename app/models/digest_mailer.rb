@@ -67,15 +67,45 @@ class DigestMailer < Mailer
 		puts "Activity.scope: %s" % activity.scope.inspect
 
 		events = activity.events(date_from, date_to)
+		puts "events.count: %d" % events.count
 
 		#if events.empty?
 		body[:events] = events
+		debug_events(events)
 		body[:events_by_day] = events.group_by(&:event_date)
+		puts "events_by_day days count: %d" % body[:events_by_day].count
 		body[:params] = params
 
 	rescue ActiveRecord::RecordNotFound
 		logger.error "Record not found!"
 		#render_404
+	end
+	
+	def self.debug_events(events)
+		if events.blank?
+			puts "No events found" 
+			return
+		end
+		#puts "events.first.inspect: %s" % events.first.inspect
+		puts
+		puts "========================================"
+		
+		events_by_day = events.group_by(&:event_date)
+		if events_by_day.blank?
+			puts "Attempt to group by date resulted in no groups"
+			events.each do |e|
+				puts "       %s --- %s --- %s" % [format_time(e.event_datetime, false), e.event_type, e.event_title]
+			end
+			return
+		end
+		puts "events_by_day.keys: %s" % events_by_day.keys.sort.join(",")
+		events_by_day.keys.sort.each do |day|
+			puts "* day: %s" % day.to_s
+			events_by_day[day].sort {|x,y| x.event_datetime <=> y.event_datetime }.each do |e|
+				puts "       %s --- %s --- %s" % [format_time(e.event_datetime, false), e.event_type, e.event_title]
+			end
+		end
+		puts
 	end
   
 	# Get all projects found with the plugin enabled or just the project specified
@@ -110,7 +140,7 @@ class DigestMailer < Mailer
 		recipients = []
 		default = Setting.plugin_redmine_digest[:default_account_enabled]
 		default = default.nil? ? true : default
-		puts "Default setting for whether digest is active for users: " % default.to_s
+		puts "Default setting for whether digest is active for users: %s" % default.to_s
 		members = Member.find(:all, :conditions => ["project_id = " + project[:id].to_s]).each { |m|
 			user = m.user
 			if user && user.active? && user.mail
@@ -139,6 +169,7 @@ class DigestMailer < Mailer
 		projects = get_projects(options[:project])
 		return results if projects.nil?
 		projects.each do |project|
+			puts
 			log "** Processing project '%s'..." % project.name
 			
 			body = {

@@ -35,7 +35,6 @@ today    : <%= Time.now.to_date %>
 	l(:label_date_from_to, :start => format_date(@date_from), :end => format_date(@date_to-1)).downcase -%>)</span></h1>
 	
 <p><%= link_to l(:label_activity_view_all), url_for(:controller => 'activities', :action => 'index', :only_path => false) %></p>
-<% @events_by_day = nil -%>
 <% if @events_by_day.blank? -%>
 <p><%= l(:label_no_data) %></p>
 <% else -%>
