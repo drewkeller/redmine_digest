@@ -17,15 +17,6 @@
 .event .description 
 </style>
 
-<!-- p>
-<%#= 
-if l(:this_is_gloc_lib) == 'this_is_gloc_lib'
-	l(:mail_body_digest, @project, @events_by_day.size)
-else
-	l(:mail_body_digest, :project => @project, :count => @events_by_day.size) 
-end
-%></p -->
-
 <% if not @test_email.nil? -%>
 <h3>Test email</h3>
 <pre>
@@ -38,19 +29,28 @@ today    : <%= Time.now.to_date %>
 </pre>
 <% end -%>
 
-<h1>Activity <span style="font-weight:normal;">(<%= @date_from == @date_to-1? format_date(@date_from) : l(:label_date_from_to, :start => format_date(@date_from), :end => format_date(@date_to-1)).downcase %>)</span></h1>
+<h1>Activity <span style="font-weight:normal;">(
+<%= @date_from == @date_to-1? 
+	format_date(@date_from) : 
+	l(:label_date_from_to, :start => format_date(@date_from), :end => format_date(@date_to-1)).downcase -%>)</span></h1>
+	
 <p><%= link_to l(:label_activity_view_all), url_for(:controller => 'activities', :action => 'index', :only_path => false) %></p>
-
+<% if @events_by_day.blank? -%>
+<p><%= l(:label_no_data) %></p>
+<% else -%>
 <div id="activity">
 <ul>
 <% @events_by_day.keys.sort.each do |day| %>
 <li>
-<h3><%= format_date(day) %></h3>
+<h3>
+<%= format_date(day) unless day.nil? -%>
+<%= Unknown date if day.nil? -%>
+</h3>
 <dl>
 <% @events_by_day[day].sort {|x,y| x.event_datetime <=> y.event_datetime }.each do |e| -%>
 <div class="event">
-  <dt class="<%= e.event_type %>  <%= User.current.logged? && e.respond_to?(:event_author) && User.current == e.event_author ? 'me' : nil %>">
-	<%= avatar(e.event_author, :size => "24") if e.respond_to?(:event_author) %>
+  <dt class="<%= e.event_type %>">
+	<%#= avatar(e.event_author, :size => "24") if e.respond_to?(:event_author) %>
   <span class="time"><%= format_time(e.event_datetime, false) %></span>
   <%#= content_tag('span', h(e.project), :class => 'project') if @project.nil? || @project != e.project %>
   <%= link_to format_activity_title(e.event_title), e.event_url({:only_path => false}) %>
@@ -70,12 +70,9 @@ today    : <%= Time.now.to_date %>
 </ul>
 </div>
 
-<%= content_tag('p', l(:label_no_data), :class => 'nodata') if @events_by_day.empty? %>
-
-<% html_title(l(:label_activity), @author) -%>
-
 <p><%= link_to(
 	l(:label_activity_view_all), {
 	:controller => 'activities', 
 	:action => 'index', 
 	:only_path => false}) %></p>
+<% end -%>
