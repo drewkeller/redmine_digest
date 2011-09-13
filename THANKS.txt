@@ -3,3 +3,4 @@ Digest THANKS:
 
 Emmanuel Bretelle aka chantra (Whining plugin)
 Daniel Lehmann (Notifo plugin)
+cforce (German translation)
