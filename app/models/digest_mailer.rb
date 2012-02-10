@@ -103,7 +103,7 @@ class DigestMailer < Mailer
 	def self.get_recipients(project)
 		recipients = []
 		default = Setting.plugin_redmine_digest[:default_account_enabled]
-		default = default.nil? ? true : default
+		default = default.nil? ? false : default
 		members = Member.find(:all, :conditions => ["project_id = " + project[:id].to_s]).each { |m|
 			user = m.user
 			if user && user.active? && user.mail
@@ -115,8 +115,8 @@ class DigestMailer < Mailer
 				recipients << user.mail if active
 			end
 		}
+		log "Found %i digest recipients out of %i project members/groups." % [recipients.length, members.length]
 		return recipients
-		puts "Found %i digest recipients out of %i project members/groups." % [recipients.length, members.length]
 	end
   
 	def self.digests(options={})
