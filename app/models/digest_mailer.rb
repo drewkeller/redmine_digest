@@ -26,9 +26,9 @@ class DigestMailer < Mailer
 		end
 		content_type "multipart/alternative"
 
-		#part :content_type => "text/plain", :body => render_message("digest.text.plain.rhtml", body)
-		#part :content_type => "text/html", :body => render_message("digest.text.html.rhtml", body)
-		render_multipart('digest', body)
+		part :content_type => "text/plain", :body => render_message("digest.text.plain.rhtml", body)
+		part :content_type => "text/html", :body => render_message("digest.text.html.rhtml", body)
+		#render_multipart('digest', body)
 		puts 'Email sent.'
 		RAILS_DEFAULT_LOGGER.debug 'Email sent.'
 	end
@@ -56,7 +56,7 @@ class DigestMailer < Mailer
 		params["show_documents"] = 1
 		params["show_files"] = 1
 		params["show_wiki_edits"] = 1
-		user = User.find(:all, :conditions => ["admin=1"]).first
+		user = User.find(:all, :conditions => ["admin='1'"]).first
 		puts "Warning: Could not find an admin user. Some events might not be visible to the anonymous user" if user.nil?
 		puts "Fetching activity"
 		activity = Redmine::Activity::Fetcher.new(user, :project => project,
