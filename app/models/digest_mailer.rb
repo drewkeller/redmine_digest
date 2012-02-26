@@ -56,7 +56,7 @@ class DigestMailer < Mailer
 		params["show_documents"] = 1
 		params["show_files"] = 1
 		params["show_wiki_edits"] = 1
-		user = User.find(:all, :conditions => ["admin=1"]).first
+		user = User.find(:all, :conditions => ["admin='1'"]).first
 		puts "Warning: Could not find an admin user. Some events might not be visible to the anonymous user" if user.nil?
 		activity = Redmine::Activity::Fetcher.new(user, :project => project,
 			:with_subprojects => with_subprojects)
