@@ -26,9 +26,9 @@ class DigestMailer < Mailer
 		end
 		content_type "multipart/alternative"
 
-		#part :content_type => "text/plain", :body => render_message("digest.text.plain.rhtml", body)
-		#part :content_type => "text/html", :body => render_message("digest.text.html.rhtml", body)
-		render_multipart('digest', body)
+		part :content_type => "text/plain", :body => render_message("digest.text.plain.rhtml", body)
+		part :content_type => "text/html", :body => render_message("digest.text.html.rhtml", body)
+		#render_multipart('digest', body)
 		puts 'Email sent.'
 		RAILS_DEFAULT_LOGGER.debug 'Email sent.'
 	end
@@ -103,7 +103,7 @@ class DigestMailer < Mailer
 	def self.get_recipients(project)
 		recipients = []
 		default = Setting.plugin_redmine_digest[:default_account_enabled]
-		default = default.nil? ? false : default
+		default = default.nil? ? true : default
 		members = Member.find(:all, :conditions => ["project_id = " + project[:id].to_s]).each { |m|
 			user = m.user
 			if user && user.active? && user.mail
@@ -115,8 +115,8 @@ class DigestMailer < Mailer
 				recipients << user.mail if active
 			end
 		}
-		log "Found %i digest recipients out of %i project members/groups." % [recipients.length, members.length]
 		return recipients
+		puts "Found %i digest recipients out of %i project members/groups." % [recipients.length, members.length]
 	end
   
 	def self.digests(options={})
