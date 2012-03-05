@@ -2,7 +2,7 @@
 
 ==NOTE to upgraders from 0.0.1: You MUST perform db:migrate_plugins after upgrading!!!
 
-This plugin sends email digests of project activity.
+This plugin sends a summary of project activity in an email. Each project is checked for activity during the specified period of time, and if there is new activity, an email is sent to each user who has opted to receive the digest.
 
 ==Author
 
@@ -60,6 +60,18 @@ Or install rufus-scheduler and add an initializer to REDMINE_ROOT/config/initial
     end
 
 ==Examples
+
+===Example Output
+Here is an example of output from the console, for a weekly digest.
+    Start: 7
+    Days : 7
+    ** Processing project 'test 1'...
+    Summarizing: 2012-02-27 to 2012-03-05 (7 days)
+    From 03/05/2011 to 03/05/2012
+    Found 3 events.
+    Email sent.
+    Digest done.
+
 
 ===Example 1: Daily Digest for single project
 
