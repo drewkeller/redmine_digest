@@ -3,7 +3,8 @@ require "mailer"
 
 class DigestMailer < Mailer
 	unloadable
-	 
+	self.instance_variable_get("@inheritable_attributes")[:view_paths] << RAILS_ROOT + "/vendor/plugins/redmine_digest/app/views"
+
 	#public :self.test
 	def self.test(user)
 		options = {}
