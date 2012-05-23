@@ -1,7 +1,6 @@
 </fieldset>
-<fieldset>
+<fieldset class="box tabular">
 	<legend><%=l(:label_digest_account_settings)%></legend>
-	<p><%=l(:label_digest_account_description) -%></p>
 	<%
 	if @user.digest_account.nil?
 	  account = @user.build_digest_account
@@ -9,7 +8,7 @@
 	end
 	-%>
 	<% @user.build_digest_account unless @user.digest_account -%>
-	<% form.fields_for :digest_account do |digest_form| -%>
+	<% form.fields_for :digest_account, :lang => current_language do |digest_form| -%>
 	<p><%= digest_form.check_box :active -%></p>
 	<% end -%>
 </fieldset>
