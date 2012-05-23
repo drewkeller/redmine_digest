@@ -1,26 +1,28 @@
 de:
 # German strings go here
-  label_digest_account_settings: Bericht zu den Projektaktivitäten
-  label_digest_account_description: Aboniere den periodischen Email Versand eines Berichts zu den Projektaktivitäten.
+  label_digest_account_settings: Bericht zu den Projektaktivitï¿½ten
+  label_digest_account_description: Aboniere den periodischen Email Versand eines Berichts zu den Projektaktivitï¿½ten.
   label_digest_default_account_enabled: Standardbenutzereinstellung
   label_active: Aktiv
   
-  mail_body_digest: "[%{project}] Aktivitäten: %{count} Ereignisse"
-  mail_subject_digest: "[%{project}] Aktivitäten: %{count} Ereignisse"
+  mail_body_digest: "[%{project}] Aktivitï¿½ten: %{count} Ereignisse"
+  mail_subject_digest: "[%{project}] Aktivitï¿½ten: %{count} Ereignisse"
   
-  digest_days: Anzahl der Tage für den Bericht
-  digest_start: Starte mit der Erfassung der Aktivitäten vor x Tagen
+  digest_days: Anzahl der Tage fï¿½r den Bericht
+  digest_start: Starte mit der Erfassung der Aktivitï¿½ten vor x Tagen
   start_explanation: 0 = ab heute, 1 = ab gestern, 7 = vor einer Woche 
   days: "Tag(e)"
-  label_activity_view_all: alle Aktivitäten anzeigen
+  label_activity_view_all: alle Aktivitï¿½ten anzeigen
   label_example: Beispiele
   label_note: Notizen
-  label_note_text: Der Zeitplanungsprogramm für den  'rake task' überschreibt diese Standardeinstelklungen falls die Parameter explizit im Aufruf gesetzt werden.
+  label_note_text: Der Zeitplanungsprogramm fï¿½r den  'rake task' ï¿½berschreibt diese Standardeinstelklungen falls die Parameter explizit im Aufruf gesetzt werden.
   label_example_text: Das Kapitel Benutzerhinweise und Beispiele der  'Readme' beschreibt einige praktikable Strategien.
   label_send_test_email: Verschicke eine Test-Mail an deine Email Adresse.
-  label_send_all_digests: Verschicke Berichte für alle Projekte mit aktivem Abo
-  label_apply_changes_first: Bitte speichern Sie ihre Einstellungen vor dem Mail Versand damit diese berücksichtigt werden.
+  label_send_all_digests: Verschicke Berichte fï¿½r alle Projekte mit aktivem Abo
+  label_apply_changes_first: Bitte speichern Sie ihre Einstellungen vor dem Mail Versand damit diese berï¿½cksichtigt werden.
 
   notice_digest_sent_to: "Ein Bericht wurde versendet: %{value}."
   notice_digests_sent: Die Mails mit dem Bericht wurden versendet.
-  notice_digest_error: "Während des Versands ist ein Fehler aufgetreten (%{value})"
+  notice_digest_error: "Wï¿½hrend des Versands ist ein Fehler aufgetreten (%{value})"
+
+  field_active: Aboniere den periodischen Email Versand eines Berichts zu den Projektaktivitï¿½ten.
