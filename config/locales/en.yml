@@ -24,3 +24,5 @@ en:
   notice_digest_sent_to: "A digest was processed for %{value}."
   notice_digests_sent: Digest emails were processed.
   notice_digest_error: "An error occurred while sending the digest (%{value})"
+
+  field_active: Receive an email periodically that shows project activity
