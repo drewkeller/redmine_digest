@@ -29,7 +29,8 @@ Redmine::Plugin.register :redmine_digest do
   settings :default => { 
 	:start_default => 1, 
 	:days_default => 1,
-	:default_account_enabled => "true"}, 
+	:default_account_enabled => "true",
+	:debugging_messages => 1}, 
 	:partial => 'settings/digest_settings'
 
   project_module :redmine_digest do

@@ -33,13 +33,14 @@ require File.expand_path(File.dirname(__FILE__) + "/../../../../../config/enviro
 #require "digestmailer"
 
 namespace :redmine do
-	task :send_digest, :environment, :project, :start, :days do |t, args|
+	task :send_digest, :environment, :project, :start, :days, :debugging_messages do |t, args|
 		options = {}
 		args.with_defaults(:project => nil, :start => nil, :days => nil, :environment => "production")
 		ENV['environment'] = args[:environment]
 		options[:project] = ENV['project'] if (ENV['project'] || args[:project])
 		options[:start] = ENV['start'].to_i if (ENV['start'] || args[:start])
 		options[:days] = ENV['days'].to_i if (ENV['days'] || args[:days])
+		options[:debugging_messages] = ENV['debugging_messages'].to_i if (ENV['debugging_messages'] || args[:debugging_messages])
 
 		DigestMailer.digests(options)
 		puts "Digest done."

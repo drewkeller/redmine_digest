@@ -40,6 +40,8 @@
 <p>
 	<em><%= l(:label_apply_changes_first) %></em>
 </p>
-<%#= textilizable(File.open(File.dirname(__FILE__) + '/../../../README.rdoc', 'rb').read) %>
-
-
+<p>
+	<%= content_tag(:label, l(:label_output_extra_messages)) %>
+	<%= check_box_tag("settings[debugging_messages]", "1", Setting.plugin_redmine_digest[:debugging_messages]) %> 
+	<%= l(:general_text_Yes) %>
+</p>

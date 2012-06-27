@@ -20,7 +20,8 @@ de:
   label_send_test_email: Verschicke eine Test-Mail an deine Email Adresse.
   label_send_all_digests: Verschicke Berichte f�r alle Projekte mit aktivem Abo
   label_apply_changes_first: Bitte speichern Sie ihre Einstellungen vor dem Mail Versand damit diese ber�cksichtigt werden.
-
+  label_output_extra_messages: Output extra messages (console and log)
+  
   notice_digest_sent_to: "Ein Bericht wurde versendet: %{value}."
   notice_digests_sent: Die Mails mit dem Bericht wurden versendet.
   notice_digest_error: "W�hrend des Versands ist ein Fehler aufgetreten (%{value})"

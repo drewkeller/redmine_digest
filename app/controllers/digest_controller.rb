@@ -34,7 +34,7 @@ class DigestController < ApplicationController
 			:content => instructions 
 		}
 		respond_to do |format|
-			format.html { render :template => 'settings/digest_readme.rhtml', :layout => 'admin',
+			format.html { render :template => 'settings/digest_readme.html.erb', :layout => 'admin',
 			:locals => { :readme => @readme }}
 		end
 	end
@@ -60,17 +60,18 @@ class DigestController < ApplicationController
 			if @test.nil? or @test.empty?
 				message += "<p>%s</p>" % "There was no resulting email."
 			else
+				debug "@test: %s" % @test.inspect
 				message += "<p>%d %s processed.<br />%s</p>" % [
 					@test.length, 
 					@test.length == 1 ? "project was" : "projects were",
 					@test.join("<br />")
 				]
 			end
-			puts message
+			debug message
 			flash[:notice] = message unless session.nil?
 		rescue Exception => e
-			puts e.message
-			puts e.backtrace
+			debug e.message
+			debug e.backtrace
 			logger.error e.message, e.backtrace unless logger.nil?
 			flash[:error] = l(:notice_digest_error, e.message) unless session.nil?
 		end
@@ -81,7 +82,7 @@ class DigestController < ApplicationController
 	end
 	
 	def send_digest(options={})
-		puts options.inspect
+		debug options.inspect
 		digest_send("options", options)
 	end
 	
@@ -91,6 +92,16 @@ class DigestController < ApplicationController
 
 	def test_email
 		digest_send "test"
+	end
+	
+	def debug(message)
+		if Setting.plugin_redmine_digest[:debugging_messages]
+			puts message
+			logger.info(message)
+		else
+			puts "debugging_messages: %s" % Setting.plugin_redmine_digest[:debugging_messages]
+			logger.info("debugging_messages: %s" % Setting.plugin_redmine_digest[:debugging_messages])
+		end
 	end
 
 	def self.logger

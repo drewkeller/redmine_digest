@@ -47,15 +47,15 @@ plugins settings page.
     project : name or id of a specific Redmine project to create a digest for
 
 Create a cron job with a line similar to this:
-    1 0 * * 1-7 www-data cd /path/to/redmine && /usr/bin/rake redmine:send_digest start=1 days=1 project=myproject RAILS_ENV="production"
+    1 0 * * 1-7 www-data cd /path/to/redmine && /usr/bin/rake redmine:send_digest start=1 days=1 project=myproject  RAILS_ENV="production" debugging_messages=1
 
 Or create a Windows task with a line similar to this:
-    cmd /C rake redmine:send_digest start=1 days=1 project=myproject RAILS_ENV="production"
+    cmd /C rake redmine:send_digest start=1 days=1 project=myproject RAILS_ENV="production" debugging_messages=1
 
 Or install rufus-scheduler and add an initializer to REDMINE_ROOT/config/initializers/digest_tasks.rb, like...
     scheduler.cron '01 00 * * 1-7' do
 	  # every day at 00:01 (12:01am)
-	  options = { :start => 1, :days => 1, :project => 'myproject' }
+	  options = { :start => 1, :days => 1, :project => 'myproject', :debugging_messages => 1 }
 	  DigestController.new.send_digest(options)
     end
 

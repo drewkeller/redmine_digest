@@ -30,8 +30,7 @@ class DigestMailer < Mailer
 		part :content_type => "text/plain", :body => render_message("digest.text.plain.rhtml", body)
 		part :content_type => "text/html", :body => render_message("digest.text.html.rhtml", body)
 		#render_multipart('digest', body)
-		puts 'Email sent.'
-		RAILS_DEFAULT_LOGGER.debug 'Email sent.'
+		log 'Email sent.'
 	end
 
 	def self.fill_events(project, body={})
@@ -47,8 +46,8 @@ class DigestMailer < Mailer
 		body[:start] = start
 		body[:date_to] = date_to
 		body[:date_from] = date_from
-		puts "Summarizing: %s to %s (%d days)" % [ date_from.to_s, date_to.to_s, days]
-		puts l(:label_date_from_to, :start => format_date(date_to - days), :end => format_date(date_to-1))
+		debug "Summarizing: %s to %s (%d days)" % [ date_from.to_s, date_to.to_s, days]
+		debug l(:label_date_from_to, :start => format_date(date_to - days), :end => format_date(date_to-1))
 
 		with_subprojects = params[:with_subprojects].nil? ? Setting.display_subprojects_issues? : (params[:with_subprojects] == '1')
 		params["show_issues"] = 1
@@ -58,7 +57,7 @@ class DigestMailer < Mailer
 		params["show_files"] = 1
 		params["show_wiki_edits"] = 1
 		user = User.find(:all, :conditions => ["admin='1'"]).first
-		puts "Warning: Could not find an admin user. Some events might not be visible to the anonymous user" if user.nil?
+		debug "Warning: Could not find an admin user. Some events might not be visible to the anonymous user" if user.nil?
 		activity = Redmine::Activity::Fetcher.new(user, :project => project,
 			:with_subprojects => with_subprojects)
 		activity.scope_select {|t| !params["show_#{t}"].nil?}
@@ -71,7 +70,6 @@ class DigestMailer < Mailer
 		body[:events] = events
 		body[:events_by_day] = events.group_by(&:event_date)
 		body[:params] = params
-
 	rescue ActiveRecord::RecordNotFound
 		logger.error "Record not found!"
 		#render_404
@@ -117,15 +115,17 @@ class DigestMailer < Mailer
 			end
 		}
 		return recipients
-		puts "Found %i digest recipients out of %i project members/groups." % [recipients.length, members.length]
+		debug "Found %i digest recipients out of %i project members/groups." % [recipients.length, members.length]
 	end
   
 	def self.digests(options={})
 		start_default = Setting.plugin_redmine_digest[:start_default].to_i
 		days_default = Setting.plugin_redmine_digest[:days_default].to_i
+		debugging_default = Setting.plugin_redmine_digest[:debugging_messages].to_i
 		days = options[:days].nil? ? days_default : options[:days].to_i
 		start = options[:start].nil? ? start_default : options[:start].to_i
-		puts
+		@debugging = options[:debugging_messages].nil? ? debugging_default : options[:debugging_messages].to_i
+		debug ""
 		log "====="
 		log "Start: %d" % start
 		log "Days : %d" % days
@@ -149,7 +149,7 @@ class DigestMailer < Mailer
 			  results << message
 			  next
 			end
-			puts "Found %i events." % [body[:events].length]
+			debug "Found %i events." % [body[:events].length]
 			recipients = options[:test_email].nil? ? get_recipients(project) : options[:test_email]
 			if recipients.empty?
 				message = "No members were found for project %s." % project.to_s
@@ -174,8 +174,24 @@ class DigestMailer < Mailer
 			results << message
 		end
 		return results
+	rescue Exception => e
+		logger.error e.message, e.backtrace unless logger.nil?
 	end
 	
+	def debug(message)
+		DigestMailer.debug message
+	end
+	
+	def self.debug(message)
+		if Setting.plugin_redmine_digest[:debugging_messages] || @debugging
+			puts message
+			logger.info(message) unless logger.nil?
+		else	
+			puts "debugging_messages: %s" % Setting.plugin_redmine_digest[:debugging_messages]
+			logger.info("debugging_messages: %s" % Setting.plugin_redmine_digest[:debugging_messages]) unless logger.nil?
+		end
+	end
+
 	def self.logger
 		if RAILS_DEFAULT_LOGGER == nil
 			puts "No logger found"
@@ -185,8 +201,14 @@ class DigestMailer < Mailer
 		#ActionController::Base::logger
 	end
 
+	def log(info_message)
+		DigestMailer.log(info_message)
+	end
+	
 	def self.log(info_message)
-		puts info_message
+		if Setting.plugin_redmine_digest[:debugging_messages] || @debugging
+			puts info_message
+		end
 		logger.info(info_message) unless logger.nil?
 	end
 
