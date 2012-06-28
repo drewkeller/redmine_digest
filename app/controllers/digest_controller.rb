@@ -60,18 +60,18 @@ class DigestController < ApplicationController
 			if @test.nil? or @test.empty?
 				message += "<p>%s</p>" % "There was no resulting email."
 			else
-				debug "@test: %s" % @test.inspect
+				dbg "@test: %s" % @test.inspect
 				message += "<p>%d %s processed.<br />%s</p>" % [
 					@test.length, 
 					@test.length == 1 ? "project was" : "projects were",
 					@test.join("<br />")
 				]
 			end
-			debug message
+			dbg message
 			flash[:notice] = message unless session.nil?
 		rescue Exception => e
-			debug e.message
-			debug e.backtrace
+			dbg e.message
+			dbg e.backtrace
 			logger.error e.message, e.backtrace unless logger.nil?
 			flash[:error] = l(:notice_digest_error, e.message) unless session.nil?
 		end
@@ -82,7 +82,7 @@ class DigestController < ApplicationController
 	end
 	
 	def send_digest(options={})
-		debug options.inspect
+		dbg options.inspect
 		digest_send("options", options)
 	end
 	
@@ -94,7 +94,7 @@ class DigestController < ApplicationController
 		digest_send "test"
 	end
 	
-	def debug(message)
+	def dbg(message)
 		if Setting.plugin_redmine_digest[:debugging_messages]
 			puts message
 			logger.info(message)

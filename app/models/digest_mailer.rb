@@ -46,8 +46,8 @@ class DigestMailer < Mailer
 		body[:start] = start
 		body[:date_to] = date_to
 		body[:date_from] = date_from
-		debug "Summarizing: %s to %s (%d days)" % [ date_from.to_s, date_to.to_s, days]
-		debug l(:label_date_from_to, :start => format_date(date_to - days), :end => format_date(date_to-1))
+		dbg "Summarizing: %s to %s (%d days)" % [ date_from.to_s, date_to.to_s, days]
+		dbg l(:label_date_from_to, :start => format_date(date_to - days), :end => format_date(date_to-1))
 
 		with_subprojects = params[:with_subprojects].nil? ? Setting.display_subprojects_issues? : (params[:with_subprojects] == '1')
 		params["show_issues"] = 1
@@ -57,7 +57,7 @@ class DigestMailer < Mailer
 		params["show_files"] = 1
 		params["show_wiki_edits"] = 1
 		user = User.find(:all, :conditions => ["admin='1'"]).first
-		debug "Warning: Could not find an admin user. Some events might not be visible to the anonymous user" if user.nil?
+		dbg "Warning: Could not find an admin user. Some events might not be visible to the anonymous user" if user.nil?
 		activity = Redmine::Activity::Fetcher.new(user, :project => project,
 			:with_subprojects => with_subprojects)
 		activity.scope_select {|t| !params["show_#{t}"].nil?}
@@ -115,7 +115,7 @@ class DigestMailer < Mailer
 			end
 		}
 		return recipients
-		debug "Found %i digest recipients out of %i project members/groups." % [recipients.length, members.length]
+		dbg "Found %i digest recipients out of %i project members/groups." % [recipients.length, members.length]
 	end
   
 	def self.digests(options={})
@@ -125,7 +125,7 @@ class DigestMailer < Mailer
 		days = options[:days].nil? ? days_default : options[:days].to_i
 		start = options[:start].nil? ? start_default : options[:start].to_i
 		@debugging = options[:debugging_messages].nil? ? debugging_default : options[:debugging_messages].to_i
-		debug ""
+		dbg ""
 		log "====="
 		log "Start: %d" % start
 		log "Days : %d" % days
@@ -149,7 +149,7 @@ class DigestMailer < Mailer
 			  results << message
 			  next
 			end
-			debug "Found %i events." % [body[:events].length]
+			dbg "Found %i events." % [body[:events].length]
 			recipients = options[:test_email].nil? ? get_recipients(project) : options[:test_email]
 			if recipients.empty?
 				message = "No members were found for project %s." % project.to_s
@@ -178,11 +178,11 @@ class DigestMailer < Mailer
 		logger.error e.message, e.backtrace unless logger.nil?
 	end
 	
-	def debug(message)
-		DigestMailer.debug message
+	def dbg(message)
+		DigestMailer.dbg message
 	end
 	
-	def self.debug(message)
+	def self.dbg(message)
 		if Setting.plugin_redmine_digest[:debugging_messages] || @debugging
 			puts message
 			logger.info(message) unless logger.nil?
