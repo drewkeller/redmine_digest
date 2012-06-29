@@ -46,8 +46,10 @@ plugins settings page.
 
     project : name or id of a specific Redmine project to create a digest for
 
-Create a cron job with a line similar to this:
-    1 0 * * 1-7 www-data cd /path/to/redmine && /usr/bin/rake redmine:send_digest start=1 days=1 project=myproject  RAILS_ENV="production" debugging_messages=1
+Create a cron job with a line similar to this (Redmine 1.x):
+    1 0 * * 1-7 www-data cd /path/to/redmine && /usr/bin/rake redmine:send_digest start=1 days=1 project=myproject RAILS_ENV="production"
+Or (Redmine 2.x):
+    1 0 * * 1-7 www-data cd /path/to/redmine && /usr/bin/rake redmine:send_digest start=1 days=1 project=myproject Rails.env="production"
 
 Or create a Windows task with a line similar to this:
     cmd /C rake redmine:send_digest start=1 days=1 project=myproject RAILS_ENV="production" debugging_messages=1
@@ -85,11 +87,15 @@ Here is an example of output from the console, for a weekly digest.
 
 Set the scheduler to run after midnight. On the plugins settings page, set 'days to include' to 1 and set 'days ago to start' to 1. Some example scheduler commands are below.
 
-* Cron job: 
+* Cron job (Redmine 1.x): 
      1 0 * * 1-7 www-data cd /path/to/redmine && /usr/bin/rake redmine:send_digest RAILS_ENV="production"
+* Cron job (Redmine 2.x): 
+     1 0 * * 1-7 www-data cd /path/to/redmine && /usr/bin/rake redmine:send_digest Rails.env="production"
 
-* Windows task set to run at 12:01am daily:
+* Windows task set to run at 12:01am daily (Redmine 1.x):
      cmd /C rake redmine:send_digest RAILS_ENV="production" 
+* Windows task set to run at 12:01am daily (Redmine 2.x):
+     cmd /C rake redmine:send_digest Rails.env="production" 
 
 * rufus-scheduler (REDMINE_ROOT/config/initializers/digest_tasks.rb)
     scheduler.cron '01 00 * * 1-7' do
@@ -104,11 +110,15 @@ Set the scheduler to run after midnight. On the plugins settings page, set 'days
 
 Set the scheduler to run after midnight. On the plugins settings page, set 'days to include' to 7 and set 'days ago to start' to 8. Some example scheduler commands are below.
 
-* Cron job: 
+* Cron job (Redmine 1.x): 
      1 0 * * 2 www-data cd /path/to/redmine && /usr/bin/rake redmine:send_digest RAILS_ENV="production"
+* Cron job (Redmine 2.x): 
+     1 0 * * 2 www-data cd /path/to/redmine && /usr/bin/rake redmine:send_digest Rails.env="production"
 
-* Windows task set to run at 12:01am weekly:
+* Windows task set to run at 12:01am weekly (Redmine 1.x):
      cmd /C rake redmine:send_digest RAILS_ENV="production" 
+* Windows task set to run at 12:01am weekly (Redmine 2.x):
+     cmd /C rake redmine:send_digest Rails.env="production" 
 
 * rufus-scheduler (REDMINE_ROOT/config/initializers/digest_tasks.rb)
     scheduler.cron '01 00 * * 2' do

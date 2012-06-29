@@ -1,0 +1,17 @@
+</fieldset>
+<fieldset class="box">
+	<legend><%=l(:label_digest_account_settings)%></legend>
+	<p><label><%=l(:label_digest_account_description) -%></label></p>
+	<div class="tabular">
+	<%
+	if @user.digest_account.nil?
+	  account = @user.build_digest_account
+	  account[:active] = Setting.plugin_redmine_digest[:default_account_enabled]
+	end
+	-%>
+	<% @user.build_digest_account unless @user.digest_account -%>
+	<% form.fields_for :digest_account, :lang => current_language do |digest_form| -%>
+		<p><%= digest_form.check_box :active -%></p>
+	<% end -%>
+	</div>
+</fieldset>

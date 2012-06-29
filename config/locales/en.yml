@@ -1,9 +1,9 @@
 en:
 # English strings go here
   label_digest_account_settings: Digests
-  label_digest_account_description: Receive an email periodically that shows project activity.
+  label_digest_account_description: A digest is a summary of a project's activity over a period of time, sent in one email per project.
   label_digest_default_account_enabled: Default setting for users
-  label_active: Active
+  label_active: Send me digest emails
   
   mail_body_digest: "[%{project}] Activity: %{count} events"
   mail_subject_digest: "[%{project}] Activity: %{count} events"
@@ -26,4 +26,4 @@ en:
   notice_digests_sent: Digest emails were processed.
   notice_digest_error: "An error occurred while sending the digest (%{value})"
 
-  field_active: Receive an email periodically that shows project activity
+  field_active: Send me digest emails

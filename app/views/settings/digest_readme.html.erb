@@ -12,7 +12,8 @@
 </div>
 
 <div class="wiki">
-<%= @readme[:content] %>
+<%= cdata_section @readme[:content] unless Rails::VERSION::MAJOR < 3  -%>
+<%= @readme[:content] unless Rails::VERSION::MAJOR >= 3 %>
 </div>
 
 </div>

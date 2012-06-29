@@ -28,19 +28,27 @@ Example:
 END_DESC
 
 require 'rake'
-require File.expand_path(File.dirname(__FILE__) + "/../../../../../config/environment")
-#require "mailer"
-#require "digestmailer"
+if Rails::VERSION::MAJOR >= 3
+	require File.expand_path(File.dirname(__FILE__) + "/../../../../config/environment")
+else
+	require File.expand_path(File.dirname(__FILE__) + "/../../../../../config/environment")
+end
 
 namespace :redmine do
 	task :send_digest, :environment, :project, :start, :days, :debugging_messages do |t, args|
+		if Rails::VERSION::MAJOR >= 3
+			env = Rails.env
+		else
+			env = ENV
+		end
+		
 		options = {}
 		args.with_defaults(:project => nil, :start => nil, :days => nil, :environment => "production")
-		ENV['environment'] = args[:environment]
-		options[:project] = ENV['project'] if (ENV['project'] || args[:project])
-		options[:start] = ENV['start'].to_i if (ENV['start'] || args[:start])
-		options[:days] = ENV['days'].to_i if (ENV['days'] || args[:days])
-		options[:debugging_messages] = ENV['debugging_messages'].to_i if (ENV['debugging_messages'] || args[:debugging_messages])
+		env['environment'] = args[:environment]
+		options[:project] = env['project'] if (env['project'] || args[:project])
+		options[:start] = env['start'].to_i if (env['start'] || args[:start])
+		options[:days] = env['days'].to_i if (env['days'] || args[:days])
+		options[:debugging_messages] = env['debugging_messages'].to_i if (env['debugging_messages'] || args[:debugging_messages])
 
 		DigestMailer.digests(options)
 		puts "Digest done."

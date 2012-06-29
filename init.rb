@@ -1,20 +1,24 @@
 require 'rake'
 require 'redmine'
 require 'rubygems'
-require 'dispatcher'
+require 'dispatcher' unless Rails::VERSION::MAJOR >= 3
 require 'action_mailer'
 
+
+require_dependency 'project'
 require_dependency 'principal'
 require_dependency 'user'
-require_dependency 'redmine_digest/hooks/view_my_account_hook'
 
-Dispatcher.to_prepare :redmine_digest do
-  require_dependency 'principal'
-  require_dependency 'user'
-  # Guards against including the module multiple times (like in tests)
-  # and registering multiple callbacks
-  unless User.included_modules.include? RedmineDigest::UserPatch
-    User.send(:include, RedmineDigest::UserPatch)
+require_dependency 'redmine_digest/hooks/view_my_account_hook'
+#require 'redmine_digest/user_patch'
+
+if Rails::VERSION::MAJOR >= 3
+  Rails.configuration.to_prepare do
+    require_dependency 'redmine_digest_patches'
+  end
+else
+  Dispatcher.to_prepare :redmine_digest do
+    require_dependency 'redmine_digest_patches'
   end
 end
 
@@ -24,7 +28,8 @@ Redmine::Plugin.register :redmine_digest do
   #author_url
   url 'http://github.com/drewkeller/redmine_digest.git' if respond_to?(:url)
   description 'A plugin to send email digests of project activity. This plugin must be called by a scheduler (cronjob, Windows task, rufus-scheduler, etc.). NOTE to upgraders from 0.0.1: You MUST perform db:migrate_plugins after upgrading!!!'
-  version '0.1.0'
+  version '0.2.0'
+  requires_redmine :version_or_higher => '2.0.0' unless Rails::VERSION::MAJOR < 3
 
   settings :default => { 
 	:start_default => 1, 

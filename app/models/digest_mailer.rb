@@ -1,9 +1,15 @@
+gem "actionmailer"
 require "mailer"
 #require "actionmailer"
 
 class DigestMailer < Mailer
 	unloadable
+
+	if Rails::VERSION::MAJOR >= 3
+		ActionMailer::Base.prepend_view_path(File.join(File.dirname(__FILE__), '../', 'views'))
+	else
 	self.instance_variable_get("@inheritable_attributes")[:view_paths] << RAILS_ROOT + "/vendor/plugins/redmine_digest/app/views"
+	end
 
 	#public :self.test
 	def self.test(user)
@@ -17,19 +23,34 @@ class DigestMailer < Mailer
 	end
 
 	def digest(project, recip_emails, body, days)
-		#set_language_if_valid user.language
-		recipients recip_emails
-		#recipients Setting.mail_from
-		if l(:this_is_gloc_lib) == 'this_is_gloc_lib'
-			subject l(:mail_subject_digest, issues.size, days)
+		if Rails::VERSION::MAJOR >= 3
+			if l(:this_is_gloc_lib) == 'this_is_gloc_lib'
+				subject = l(:mail_subject_digest, issues.size, days)
+			else
+				subject = l(:mail_subject_digest, :project => project, :count => body[:events].size, :days => days )
+			end
+			@body = body
+			@date_from =body[:date_from]
+			@date_to = body[:date_to]
+			@test_email = body[:test_email]
+			@days = body[:days]
+			@start = body[:start]
+			@events = body[:events]
+			@events_by_day = body[:events_by_day]
+			@params = @body[:params]
+			mail(:to => recip_emails,
+				 :subject => subject)
 		else
-			subject l(:mail_subject_digest, :project => project, :count => body[:events].size, :days => days )
+			recipients recip_emails
+			if l(:this_is_gloc_lib) == 'this_is_gloc_lib'
+				subject l(:mail_subject_digest, issues.size, days)
+			else
+				subject l(:mail_subject_digest, :project => project, :count => body[:events].size, :days => days )
+			end
+			content_type "multipart/alternative"
+			part :content_type => "text/plain", :body => render_message("digest.html.erb", body)
+			part :content_type => "text/html", :body => render_message("digest.text.erb", body)
 		end
-		content_type "multipart/alternative"
-
-		part :content_type => "text/plain", :body => render_message("digest.text.plain.rhtml", body)
-		part :content_type => "text/html", :body => render_message("digest.text.html.rhtml", body)
-		#render_multipart('digest', body)
 		log 'Email sent.'
 	end
 
@@ -63,22 +84,55 @@ class DigestMailer < Mailer
 		activity.scope_select {|t| !params["show_#{t}"].nil?}
 		#@activity.scope_select {:all}
 		activity.scope = (user.nil? ? :default : :all) if activity.scope.empty?
+		dbg "Activity.scope: %s" % activity.scope.inspect
 
 		events = activity.events(date_from, date_to)
+		dbg "events.count: %d" % events.count
 
 		#if events.empty?
 		body[:events] = events
+		debug_events(events)
 		body[:events_by_day] = events.group_by(&:event_date)
+		puts "events_by_day days count: %d" % body[:events_by_day].count
 		body[:params] = params
 	rescue ActiveRecord::RecordNotFound
 		logger.error "Record not found!"
 		#render_404
 	end
   
+	def self.debug_events(events)
+		return unless Setting.plugin_redmine_digest[:debugging_messages] || @debugging
+		if events.blank?
+			puts "No events found" 
+			return
+		end
+		#puts "events.first.inspect: %s" % events.first.inspect
+		puts
+		puts "========================================"
+		
+		events_by_day = events.group_by(&:event_date)
+		if events_by_day.blank?
+			puts "Attempt to group by date resulted in no groups"
+			events.each do |e|
+				puts "       %s --- %s --- %s" % [format_time(e.event_datetime, false), e.event_type, e.event_title]
+			end
+			return
+		end
+		puts "events_by_day.keys: %s" % events_by_day.keys.sort.join(",")
+		events_by_day.keys.sort.each do |day|
+			puts "* day: %s" % day.to_s
+			events_by_day[day].sort {|x,y| x.event_datetime <=> y.event_datetime }.each do |e|
+				puts "       %s --- %s --- %s" % [format_time(e.event_datetime, false), e.event_type, e.event_title]
+			end
+		end
+		puts
+	end
+  
 	# Get all projects found with the plugin enabled or just the project specified
 	def self.get_projects(project)
 		projects = []
 		if project.nil?
+			dbg "Looking up projects to process..."
 			p = EnabledModule.find(:all, :conditions => ["name = 'redmine_digest'"]).collect { |mod| mod.project_id }
 			if p.length == 0
 				log "No projects were found in the environment or no projects have digest enabled."
@@ -89,13 +143,16 @@ class DigestMailer < Mailer
 			if projects.empty?
 				log "Could not find matching project."
 			end
+			dbg "Found %i digestable projects out of %i total projects." % [projects.length, p.length]
 		else
+			dbg "Checking project '%s'" % project
 			projects = Project.find(:all, 
 				:conditions => ["id='%s' or identifier='%s'" % [project, project]])
 			if projects.length == 0
 				log "The specified project '%s' was not found." % [project]
 			end
 		end
+		dbg "Projects to process: %s" % projects.join(", ")
 		return projects
 	end
   
@@ -103,8 +160,10 @@ class DigestMailer < Mailer
 		recipients = []
 		default = Setting.plugin_redmine_digest[:default_account_enabled]
 		default = default.nil? ? true : default
+		dbg "Default setting for whether digest is active for users: %s" % default.to_s
 		members = Member.find(:all, :conditions => ["project_id = " + project[:id].to_s]).each { |m|
 			user = m.user
+			puts "Found user %s" % user.id
 			if user && user.active? && user.mail
 				if user.digest_account.nil?
 					active = default
@@ -114,8 +173,8 @@ class DigestMailer < Mailer
 				recipients << user.mail if active
 			end
 		}
-		return recipients
 		dbg "Found %i digest recipients out of %i project members/groups." % [recipients.length, members.length]
+		return recipients
 	end
   
 	def self.digests(options={})
@@ -133,6 +192,7 @@ class DigestMailer < Mailer
 		projects = get_projects(options[:project])
 		return results if projects.nil?
 		projects.each do |project|
+			dbg ""
 			log "** Processing project '%s'..." % project.name
 			
 			body = {
@@ -157,7 +217,11 @@ class DigestMailer < Mailer
 				results << message
 				next
 			end
-			email = deliver_digest(project, recipients, body, start)
+			if Rails::VERSION::MAJOR >= 3
+				email = digest(project, recipients, body, start).deliver
+			else
+				email = deliver_digest(project, recipients, body, start)
+			end
 			if email.nil?
 				message = "Email delivery failed for project '%s'" % project.name
 			elsif not email.respond_to?('subject')
@@ -175,7 +239,11 @@ class DigestMailer < Mailer
 		end
 		return results
 	rescue Exception => e
-		logger.error e.message, e.backtrace unless logger.nil?
+		if Rails::VERSION::MAJOR >= 3
+			logger.error e.message unless logger.nil?
+		else
+			logger.error e.message, e.backtrace unless logger.nil?
+		end
 	end
 	
 	def dbg(message)
@@ -193,14 +261,15 @@ class DigestMailer < Mailer
 	end
 
 	def self.logger
-		if RAILS_DEFAULT_LOGGER == nil
-			puts "No logger found"
+		if Rails::VERSION::MAJOR >= 3
+			logger = Rails.logger
 		else
-			return RAILS_DEFAULT_LOGGER
+			logger = RAILS_DEFAULT_LOGGER
 		end
+		return logger unless logger.nil?
 		#ActionController::Base::logger
 	end
-
+	
 	def log(info_message)
 		DigestMailer.log(info_message)
 	end

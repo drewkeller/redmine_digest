@@ -6,7 +6,7 @@ Activity
 <% else -%>
 <% @events_by_day.keys.sort.each do |day| -%>
 <% if day.nil? %>
-* Unkown date =================
+* Unknown date =================
 <% else -%>
 * <%= format_date(day) %>(<%= @date_to-@days == @date_to-1? format_date(@date_to) : l(:label_date_from_to, :start => format_date(@date_to - @days), :end => format_date(@date_to-1)).downcase %>) =================
 <% end -%>

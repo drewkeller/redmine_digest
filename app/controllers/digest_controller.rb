@@ -14,8 +14,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-require 'rdoc/markup/simple_markup'
-require 'rdoc/markup/simple_markup/to_html'
+
+if Rails::VERSION::MAJOR < 3
+	require 'rdoc/markup/simple_markup'
+	require 'rdoc/markup/simple_markup/to_html'
+end
 
 class DigestController < ApplicationController
 	unloadable
@@ -24,11 +27,16 @@ class DigestController < ApplicationController
 
 	def show_readme
 		filename = 'README.rdoc'
-		p = SM::SimpleMarkup.new
-		h = SM::ToHtml.new
 		f = File.dirname(__FILE__) + '/../../' + filename
 		input_string = File.open(f, 'rb').read
-		instructions = p.convert(input_string, h)
+		if Rails::VERSION::MAJOR >=3
+			h = RDoc::Markup::ToHtml.new
+			instructions = h.convert(input_string)
+		else
+			p = SM::SimpleMarkup.new
+			h = SM::ToHtml.new
+			instructions = p.convert(input_string, h)
+		end
 		@readme = { 
 			:filename => filename, 
 			:content => instructions 
@@ -40,15 +48,25 @@ class DigestController < ApplicationController
 	end
 
 	def digest_send(which, options={})
+		is_session = @request.nil? && @_request.nil?
+		is_session = !is_session
+		if not is_session
+			puts "setting request"
+			@_request = ActionDispatch::Request.new(Rails.env)
+		end
+		if is_session
 		raise_delivery_errors = ActionMailer::Base.raise_delivery_errors
 		# Force ActionMailer to raise delivery errors so we can catch it
 		ActionMailer::Base.raise_delivery_errors = true
+		end
 		begin
 			case which
 			when "options"
 				@test = DigestMailer.digests(options)
 				message = l(:notice_digests_sent)
 			when "test"
+				dbg "User.current: %s" % User.current
+				dbg "User.current.mail: %s" % User.current.mail
 				@test = DigestMailer.test(User.current)
 				message = l(:notice_digest_sent_to, User.current.mail)
 			when "all"
@@ -57,10 +75,9 @@ class DigestController < ApplicationController
 			else
 				message "No case found for '%s'." % which
 			end
-			if @test.nil? or @test.empty?
+			if @test.nil? #or @test.empty?
 				message += "<p>%s</p>" % "There was no resulting email."
 			else
-				dbg "@test: %s" % @test.inspect
 				message += "<p>%d %s processed.<br />%s</p>" % [
 					@test.length, 
 					@test.length == 1 ? "project was" : "projects were",
@@ -68,29 +85,45 @@ class DigestController < ApplicationController
 				]
 			end
 			dbg message
-			flash[:notice] = message unless session.nil?
+			if is_session
+				flash[:notice] = message
+			end
 		rescue Exception => e
 			dbg e.message
 			dbg e.backtrace
-			logger.error e.message, e.backtrace unless logger.nil?
+			if Rails::VERSION::MAJOR >= 3
+				logger.error("%s: " % e.message) unless logger.nil?
+			else
+				logger.error e.message, e.backtrace unless logger.nil?
+			end
 			flash[:error] = l(:notice_digest_error, e.message) unless session.nil?
+			if is_session
+				flash[:error] = l(:notice_digest_error, e.message)
+			else
+				puts "Exception occurred: %s" % e.message
+			end
 		end
-		ActionMailer::Base.raise_delivery_errors = raise_delivery_errors
-		if not session.nil?
+		if is_session
+			ActionMailer::Base.raise_delivery_errors = raise_delivery_errors
 			redirect_to :controller => 'settings', :action => 'plugin', :id => 'redmine_digest'
+		else
+			puts "A session was not found."
 		end
 	end
 	
 	def send_digest(options={})
+		dbg "Preparing to send digest..."
 		dbg options.inspect
 		digest_send("options", options)
 	end
 	
 	def send_all
+		dbg "Preparing to send digest for all projects."
 		digest_send "all"
 	end
 
 	def test_email
+		dbg "Preparing to send test digest."
 		digest_send "test"
 	end
 	
@@ -105,11 +138,12 @@ class DigestController < ApplicationController
 	end
 
 	def self.logger
-		if RAILS_DEFAULT_LOGGER == nil
-			#raise "No logger found"
+		if Rails::VERSION::MAJOR >= 3
+			logger = Rails.logger
 		else
-			return RAILS_DEFAULT_LOGGER
+			logger = RAILS_DEFAULT_LOGGER
 		end
+		return logger unless logger.nil?
 		#ActionController::Base::logger
 	end
 

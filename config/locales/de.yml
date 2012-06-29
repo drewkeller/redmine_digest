@@ -2,6 +2,7 @@ de:
 # German strings go here
   label_digest_account_settings: Bericht zu den Projektaktivit�ten
   label_digest_account_description: Aboniere den periodischen Email Versand eines Berichts zu den Projektaktivit�ten.
+  label_digest_account_enabled: Send me digest emails
   label_digest_default_account_enabled: Standardbenutzereinstellung
   label_active: Aktiv
   
