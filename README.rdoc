@@ -2,7 +2,11 @@
 
 ==NOTE to upgraders from 0.0.1: You MUST perform db:migrate_plugins after upgrading!!!
 
-This plugin sends a summary of project activity in an email. Each project is checked for activity during the specified period of time, and if there is new activity, an email is sent to each user who has opted to receive the digest.
+This plugin sends email digests. A digest is a summary of a project's activity over a period of time. Each project is checked for activity during the specified period of time, and if there is new activity, an email is sent to each user who has opted to receive the digest.
+
+This plugin may be called by a scheduler (cronjob, Windows task, rufus-scheduler, etc.) or run manually from the plugin's configuration page.
+
+The number of days summarized and the start date of the summary are configured by the site administrator. In conjunction with a scheduler, this will send a daily digest, weekly digest, etc.
 
 ==Author
 
@@ -18,7 +22,7 @@ This plugin includes a rake job which builds a digest or summary of each project
 
 ==Compatibility
 
-This plugin is compatible with Redmine 1.2.x as well as with the current Redmine trunk.
+This plugin is compatible with Redmine 1.2.x and 2.x.
 
 ==Obtaining 
 
