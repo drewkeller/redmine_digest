@@ -1,0 +1,29 @@
+zh:
+# Simplified Chinese strings go here
+  label_digest_account_settings: 项目摘要
+  label_digest_account_description: 在项目中，将某个阶段内的相关活动以摘要邮件的方式发送给相关人员。
+  label_digest_default_account_enabled: 默认设置
+  label_active: 给我发送项目摘要邮件
+  
+  mail_body_digest: "[%{project}] 项目活动： %{count} 事务"
+  mail_subject_digest: "[%{project}] 项目活动： %{count} 事务"
+  
+  digest_days: 包含 ... 日
+  digest_start: 始于 ... 日前
+  start_explanation: 0 = 当前日期, 1 = 始于昨天, 7 = 始于七天前（当前日期前一周）
+  days: "天"
+  label_activity_view_all: 查看所有活动
+  label_example: 样例
+  label_note: 批注
+  label_note_text: 若调用方法中对参数进行了设置，则在调度时，rake命令将重新覆盖原有的参数。
+  label_example_text: Readme中提供的用法说明及样例提供一些切实可行的策略。
+  label_send_test_email: 给您的邮件地址发送测试邮件
+  label_send_all_digests: 面向所有启用该功能的项目，发送项目摘要邮件
+  label_apply_changes_first: 在发送项目摘要邮件前必须应用变更设置。
+  label_output_extra_messages: 输出信息（控制台和日志）
+
+  notice_digest_sent_to: "项目摘要邮件发送进度 %{value}."
+  notice_digests_sent: 项目摘要邮件已发送。
+  notice_digest_error: "发送项目摘要时发生错误 （%{value}）"
+
+  field_active: 给我发送项目摘要邮件
