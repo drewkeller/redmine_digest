@@ -18,6 +18,8 @@
 if Rails::VERSION::MAJOR < 3
 	require 'rdoc/markup/simple_markup'
 	require 'rdoc/markup/simple_markup/to_html'
+else
+	require 'rdoc'
 end
 
 class DigestController < ApplicationController
